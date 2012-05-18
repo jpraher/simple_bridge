@@ -74,7 +74,12 @@ query_params({Req, _DocRoot}) ->
     Req:parse_qs().
 
 post_params({Req, _DocRoot}) ->
-    Req:parse_post().
+    case proplists:get_value(content_type, headers({Req, _DocRoot})) of
+        "application/x-www-form-urlencoded" ++ _ ->
+            Req:parse_post();
+        _ ->
+            []
+    end.
 
 request_body({Req, _DocRoot}) ->
     Req:recv_body(?MAX_BODY_SIZE).
